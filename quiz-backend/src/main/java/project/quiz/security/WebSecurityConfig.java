@@ -63,6 +63,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/test/**").permitAll() // Example: Public test endpoint
                         .requestMatchers("/api/countries/populate").hasRole("ADMIN") // Only Admin can populate
                         .requestMatchers("/api/countries/**").hasAnyRole("USER", "ADMIN") // User or Admin can access country data
+                        .requestMatchers("/api/scores/**").permitAll() // Public leaderboard
                         .anyRequest().authenticated() // All other requests require authentication
                 );
 

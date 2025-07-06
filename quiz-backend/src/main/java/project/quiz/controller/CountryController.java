@@ -35,14 +35,14 @@ public class CountryController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<List<Country>> getAllCountries() {
         List<Country> countries = countryService.getAllCountries();
         return ResponseEntity.ok(countries);
     }
 
     @GetMapping("/quiz")
-    @PreAuthorize("hasRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<List<Country>> getQuizCountries(@RequestParam(defaultValue = "10") int count) {
         if (count <= 0) {
             return ResponseEntity.badRequest().body(null);
