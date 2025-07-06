@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 
 function Card() {
+  const [score, setScore] = useState(0);
   const allDummyCountries = [
     {
       id: 1,
@@ -61,8 +61,9 @@ function Card() {
   }, [remainingCountries, currentCountry, quizEnded]); // Dependencies for useEffect
 
   const handleAnswerClick = (selectedOption) => {
-    console.log(`User selected: ${selectedOption}`);
-    console.log(`Correct answer was: ${currentCountry.capital}`);
+    if (selectedOption === currentCountry.capital) {
+      setScore(score + 10);
+    }
 
     const updatedRemainingCountries = remainingCountries.filter(
       (country) => country.id !== currentCountry.id
@@ -88,6 +89,7 @@ function Card() {
     return (
       <div style={{ textAlign: "center", margin: "50px", fontSize: "24px" }}>
         <h2>Quiz Over!</h2>
+        <h3>Score: {score}!!!</h3>
         <p>You've answered all the questions. Great job!</p>
         <button className="btn btn-primary" onClick={handlePlayAgain}>
           Play Again!!!
@@ -126,6 +128,7 @@ function Card() {
 
   return (
     <div>
+      <h3>Score: {score}</h3>
       <div
         className="card"
         style={{
