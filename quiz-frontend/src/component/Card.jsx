@@ -134,7 +134,9 @@ function Card() {
 
   return (
     <div>
-      <h3>Your Highest Score: {user.score}</h3>
+      {/* TODO: Make it work */}
+      {/* Highest Score is note working */}
+      {/* <h3>Your Highest Score: {user.score}</h3> */}
       <h3>Score: {score}</h3>
       <div
         className="card"
