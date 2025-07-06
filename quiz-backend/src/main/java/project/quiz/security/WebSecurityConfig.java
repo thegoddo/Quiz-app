@@ -12,9 +12,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import project.quiz.security.jwt.AuthEntryPointJwt;
 import project.quiz.security.jwt.AuthTokenFilter;
 import project.quiz.security.jwt.JwtUtils;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableMethodSecurity // Enables @PreAuthorize, @PostAuthorize annotations
@@ -46,6 +52,23 @@ public class WebSecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // Replace "http://localhost:3000" with the actual origin of your frontend application.
+        // For multiple origins, use: Arrays.asList("http://localhost:3000", "http://anotherdomain.com")
+        // For development, you might use Collections.singletonList("*") but AVOID THIS IN PRODUCTION for security.
+        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000")); // e.g., your React/Angular app
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allowed HTTP methods
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept")); // Allowed request headers
+        configuration.setAllowCredentials(true); // Allow sending credentials (cookies, HTTP authentication, JWTs)
+        configuration.setMaxAge(3600L); // How long the pre-flight request can be cached (in seconds)
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // Apply this CORS config to ALL paths (/**)
+        return source;
     }
 
     @Bean
