@@ -26,7 +26,7 @@ function Register() {
                 </h2>
                 <h3 className="text-center">Register</h3>
                 <div className="form-group mb-2">
-                  <label for="username">Username: </label>
+                  <label for="username">Username </label>
                   <input
                     type="text"
                     className="form-control"
@@ -36,7 +36,7 @@ function Register() {
                   ></input>
                 </div>
                 <div className="form-group mb-2">
-                  <label for="email">Email: </label>
+                  <label for="email">Email </label>
                   <input
                     type="text"
                     className="form-control"
@@ -46,7 +46,7 @@ function Register() {
                   ></input>
                 </div>
                 <div className="form-group mb-2">
-                  <label for="username">Password: </label>
+                  <label for="username">Password </label>
                   <input
                     type="text"
                     className="form-control"
