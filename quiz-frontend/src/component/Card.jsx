@@ -1,95 +1,98 @@
 import React, { useState, useEffect } from "react";
+import QuizService from "../services/quiz.service";
 
 function Card() {
   const [score, setScore] = useState(0);
-  const allDummyCountries = [
-    {
-      id: 1,
-      name: "Togo",
-      capital: "Lome",
-      flagPngUrl: "https://flagcdn.com/w320/tg.png",
-    },
-    {
-      id: 2,
-      name: "India",
-      capital: "New Delhi",
-      flagPngUrl: "https://flagcdn.com/w320/in.png",
-    },
-    {
-      id: 3,
-      name: "United States",
-      capital: "Washington, D.C.",
-      flagPngUrl: "https://flagcdn.com/w320/us.png",
-    },
-    {
-      id: 4,
-      name: "Japan",
-      capital: "Tokyo",
-      flagPngUrl: "https://flagcdn.com/w320/jp.png",
-    },
-    {
-      id: 5,
-      name: "Brazil",
-      capital: "Brasília",
-      flagPngUrl: "https://flagcdn.com/w320/br.png",
-    },
-  ];
-
-  const [remainingCountries, setRemainingCountries] =
-    useState(allDummyCountries);
+  const [allCountries, setAllCountries] = useState([]);
+  const [remainingCountries, setRemainingCountries] = useState([]);
   const [currentCountry, setCurrentCountry] = useState(null);
   const [quizEnded, setQuizEnded] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const pickRandomCountry = (countriesToPickFrom) => {
-    if (countriesToPickFrom.length === 0) {
-      return null; // No countries left
+    if (!countriesToPickFrom || countriesToPickFrom.length === 0) {
+      return null;
     }
     const randomIndex = Math.floor(Math.random() * countriesToPickFrom.length);
     return countriesToPickFrom[randomIndex];
   };
 
   useEffect(() => {
-    if (remainingCountries.length > 0 && !currentCountry) {
-      setCurrentCountry(pickRandomCountry(remainingCountries));
-    } else if (
+    const fetchCountries = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await QuizService.getQuestions();
+        setAllCountries(data);
+        setRemainingCountries(data);
+        setCurrentCountry(pickRandomCountry(data));
+      } catch (err) {
+        console.error("Failed to fetch quiz questions:", err);
+        setError("Failed to load quiz questions. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCountries();
+  }, []);
+
+  useEffect(() => {
+    if (
       remainingCountries.length === 0 &&
-      currentCountry === null &&
-      !quizEnded
+      !quizEnded &&
+      allCountries.length > 0
     ) {
       setQuizEnded(true);
+      setCurrentCountry(null);
+      console.log("Quiz has ended!");
     }
-  }, [remainingCountries, currentCountry, quizEnded]); // Dependencies for useEffect
+  }, [remainingCountries, quizEnded, allCountries.length]);
 
   const handleAnswerClick = (selectedOption) => {
-    if (selectedOption === currentCountry.capital) {
-      setScore(score + 10);
+    if (currentCountry && selectedOption === currentCountry.capital) {
+      setScore((prevScore) => prevScore + 10);
     }
 
     const updatedRemainingCountries = remainingCountries.filter(
       (country) => country.id !== currentCountry.id
     );
 
-    setRemainingCountries(updatedRemainingCountries); // Update the list of remaining questions
+    setRemainingCountries(updatedRemainingCountries);
 
     if (updatedRemainingCountries.length === 0) {
       setQuizEnded(true);
-      setCurrentCountry(null); // Clear the current country
+      setCurrentCountry(null);
     } else {
       setCurrentCountry(pickRandomCountry(updatedRemainingCountries));
     }
   };
 
   const handlePlayAgain = () => {
-    setRemainingCountries(allDummyCountries);
-    setCurrentCountry(pickRandomCountry(remainingCountries));
+    setScore(0);
+    setRemainingCountries(allCountries);
+    setCurrentCountry(pickRandomCountry(allCountries));
     setQuizEnded(false);
   };
+
+  if (loading) {
+    return <div>Loading quiz questions...</div>;
+  }
+
+  if (error) {
+    return (
+      <div style={{ color: "red", textAlign: "center", margin: "50px" }}>
+        {error}
+      </div>
+    );
+  }
 
   if (quizEnded) {
     return (
       <div style={{ textAlign: "center", margin: "50px", fontSize: "24px" }}>
         <h2>Quiz Over!</h2>
-        <h3>Score: {score}!!!</h3>
+        <h3>Final Score: {score}!!!</h3>
         <p>You've answered all the questions. Great job!</p>
         <button className="btn btn-primary" onClick={handlePlayAgain}>
           Play Again!!!
@@ -99,12 +102,12 @@ function Card() {
   }
 
   if (!currentCountry) {
-    return <div>Loading quiz question... or no questions available.</div>;
+    return <div>No questions available to start the quiz.</div>;
   }
 
   const correctCapital = currentCountry.capital;
 
-  const incorrectCapitals = allDummyCountries
+  const incorrectCapitals = allCountries
     .filter((c) => c.id !== currentCountry.id)
     .map((c) => c.capital);
 
