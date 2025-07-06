@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import QuizService from "../services/quiz.service";
+import authService from "../services/auth.service";
 
 function Card() {
   const [score, setScore] = useState(0);
@@ -9,6 +10,7 @@ function Card() {
   const [quizEnded, setQuizEnded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const user = authService.getCurrentUser();
 
   const pickRandomCountry = (countriesToPickFrom) => {
     if (!countriesToPickFrom || countriesToPickFrom.length === 0) {
@@ -89,6 +91,7 @@ function Card() {
   }
 
   if (quizEnded) {
+    if (score > user.score) QuizService.updateScore(score);
     return (
       <div style={{ textAlign: "center", margin: "50px", fontSize: "24px" }}>
         <h2>Quiz Over!</h2>
@@ -131,6 +134,7 @@ function Card() {
 
   return (
     <div>
+      <h3>Your Highest Score: {user.score}</h3>
       <h3>Score: {score}</h3>
       <div
         className="card"

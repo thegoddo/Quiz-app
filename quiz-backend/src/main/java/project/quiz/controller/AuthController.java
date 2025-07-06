@@ -62,7 +62,11 @@ public class AuthController {
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
-                roles));
+                roles,
+                userRepository.findByUsername(userDetails.getUsername()) // Fetch the user to get the score
+                        .map(User::getScore)
+                        .orElse(0L) // Default to 0 if for some reason score is not found (shouldn't happen)
+        ));
     }
 
     @PostMapping("/signup")

@@ -12,6 +12,16 @@ class QuizService {
       throw error;
     }
   }
+
+  async updateScore(score) {
+    try {
+      const response = await api.put(`/scores/update?${score}`);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching score:", error);
+      throw error;
+    }
+  }
 }
 
 export default new QuizService();
