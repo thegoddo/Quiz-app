@@ -16,7 +16,7 @@ function Login() {
     <>
       <div className="container">
         <div className="row">
-          <div className="card col-md6 offset-md-3">
+          <div className="card">
             <div className="card-body">
               <form>
                 <h2>
