@@ -32,6 +32,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private Long score = 0L;
+
     @ManyToMany(fetch = FetchType.EAGER) // EAGER loads roles with user
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
